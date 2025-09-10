@@ -1,0 +1,987 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hammer & The Nail - Interactive Parable</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background-attachment: fixed;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Container */
+        .book-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Page styles */
+        .page {
+            background: #ffffff;
+            margin: 30px 0;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            position: relative;
+            border-left: 5px solid #d4af37;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Page variations */
+        .page:nth-child(even) {
+            border-left-color: #8b4513;
+        }
+
+        .title-page {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            text-align: center;
+            border-left: none;
+            padding: 60px 40px;
+        }
+
+        .reflection-page {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            color: white;
+            border-left: none;
+        }
+
+        .discussion-guide {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            border-left: none;
+        }
+
+        .contact-page {
+            background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+            color: #2c3e50;
+            border-left: none;
+            text-align: center;
+        }
+
+        /* Typography */
+        .main-title {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .page-number {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.1em;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .reflection-page .page-number,
+        .discussion-guide .page-number,
+        .title-page .page-number {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .page-content {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        /* Dialogue styling */
+        .dialogue {
+            font-style: italic;
+            color: #2c3e50;
+            border-left: 3px solid #3498db;
+            padding-left: 15px;
+            margin: 15px 0;
+            background: rgba(52, 152, 219, 0.05);
+            padding: 10px 10px 10px 20px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        /* Sound effects */
+        .sound-effect {
+            font-size: 2.5em;
+            font-weight: bold;
+            text-align: center;
+            color: #e74c3c;
+            margin: 25px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Icon styling */
+        .hammer-nail-icon {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+
+        /* Interactive elements */
+        .interactive-prompt {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin: 20px 0;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .interactive-prompt:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .expand-icon {
+            font-size: 1.5em;
+            transition: transform 0.3s ease;
+        }
+
+        .expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .prompt-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            margin-top: 0;
+        }
+
+        .expanded .prompt-content {
+            max-height: 600px;
+            margin-top: 15px;
+        }
+
+        .journal-area {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-family: inherit;
+            font-size: 1em;
+            margin-top: 10px;
+            resize: vertical;
+        }
+
+        .journal-area::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Questions styling */
+        .questions {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .questions h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Discussion guide styles */
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            min-width: 100px;
+        }
+
+        .tab-btn.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .discussion-section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .discussion-section h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        .discussion-question {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 5px;
+            border-left: 3px solid #e74c3c;
+        }
+
+        .facilitator-note {
+            background: rgba(241, 196, 15, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #f1c40f;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .discussion-format {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 12px 0;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .format-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 8px;
+        }
+
+        .activity-box {
+            background: rgba(46, 204, 113, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #2ecc71;
+            margin: 15px 0;
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: #d4af37;
+            transition: width 0.3s ease;
+            z-index: 1000;
+            width: 0%;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .page {
+                padding: 25px 20px;
+                margin: 20px 0;
+            }
+            
+            .main-title {
+                font-size: 2.2em;
+            }
+            
+            .page-content {
+                font-size: 1em;
+            }
+
+            .navigation {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                transform: none;
+            }
+
+            .nav-btn {
+                flex: 1;
+                padding: 8px 5px;
+                font-size: 0.8em;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                flex: none;
+            }
+        }
+
+        /* Animation delays */
+        .page:nth-child(1) { animation-delay: 0.1s; }
+        .page:nth-child(2) { animation-delay: 0.2s; }
+        .page:nth-child(3) { animation-delay: 0.3s; }
+        .page:nth-child(4) { animation-delay: 0.4s; }
+        .page:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="book-container">
+        <!-- Title Page -->
+        <div class="page title-page">
+            <div class="hammer-nail-icon">🔨📍</div>
+            <h1 class="main-title">The Hammer & The Nail</h1>
+            <p class="subtitle">A Parable About Pain, Purpose, and Precision</p>
+        </div>
+
+        <!-- Page 1 -->
+        <div class="page">
+            <div class="page-number">1</div>
+            <div class="page-content">
+                In the quiet stillness of a forgotten workshop, a small silver nail lay alone on a wooden table. He stared at the ceiling, wondering aloud:
+                <div class="dialogue">"Why am I even here? Day after day, I do nothing. I just... lie here."</div>
+            </div>
+        </div>
+
+        <!-- Page 2 -->
+        <div class="page">
+            <div class="page-number">2</div>
+            <div class="page-content">
+                Across the table, a heavy hammer rested in silence. His head was worn but proud.
+                <br><br>
+                The nail turned and asked, <span class="dialogue">"Do you know what I'm for? Why I was made?"</span>
+            </div>
+        </div>
+
+        <!-- Page 3 -->
+        <div class="page">
+            <div class="page-number">3</div>
+            <div class="page-content">
+                The hammer looked at him with wise, steady eyes.
+                <div class="dialogue">"You'll find out soon enough," he said. "But you must be ready."</div>
+            </div>
+        </div>
+
+        <!-- Page 4 -->
+        <div class="page">
+            <div class="page-number">4</div>
+            <div class="page-content">
+                Suddenly, a large human hand reached into the workshop.
+                <br><br>
+                The nail was plucked from the table and placed against a wooden beam. The hammer was raised into the air.
+                <div class="dialogue">"Wait... what is happening?!"</div>
+            </div>
+        </div>
+
+        <!-- Page 5 -->
+        <div class="page">
+            <div class="page-number">5</div>
+            <div class="page-content">
+                <div class="sound-effect">THUD!</div>
+                The hammer struck the nail's head. The impact echoed.
+                <div class="dialogue">"Ouch! That hurts!"</div>
+            </div>
+        </div>
+
+        <!-- Page 6 -->
+        <div class="page">
+            <div class="page-number">6</div>
+            <div class="page-content">
+                <div class="dialogue">"I'm not striking you to hurt you," said the hammer. "I'm striking you to help you."</div>
+                <div class="dialogue">"Help me?! This feels like pain!"</div>
+            </div>
+        </div>
+
+        <!-- Page 7 -->
+        <div class="page">
+            <div class="page-number">7</div>
+            <div class="page-content">
+                <div class="dialogue">"Sometimes pain is part of purpose," the hammer replied. "You were never meant to stay on the surface."</div>
+                <div class="dialogue">"But I'm being driven down... I'm sinking."</div>
+            </div>
+        </div>
+
+        <!-- Page 8 -->
+        <div class="page">
+            <div class="page-number">8</div>
+            <div class="page-content">
+                <div class="dialogue">"Yes," said the hammer. "Because only by going deep can you hold things together."</div>
+            </div>
+        </div>
+
+        <!-- Page 9 -->
+        <div class="page">
+            <div class="page-number">9</div>
+            <div class="page-content">
+                Strike after strike, the nail felt pressure, heat, and fear. He wanted to scream. He wanted to escape.
+                <div class="dialogue">"This is too much," he whispered.</div>
+            </div>
+        </div>
+
+        <!-- Page 10 -->
+        <div class="page">
+            <div class="page-number">10</div>
+            <div class="page-content">
+                <div class="dialogue">"I know," said the hammer gently. "But something beautiful is being built — and you are a part of it."</div>
+            </div>
+        </div>
+
+        <!-- Page 11 -->
+        <div class="page">
+            <div class="page-number">11</div>
+            <div class="page-content">
+                The hammer finally stopped. Silence returned to the room.
+                <br><br>
+                The nail was now embedded deep, holding two beams together — strong, invisible, necessary.
+                <div class="dialogue">"Did I do that?" he asked.</div>
+            </div>
+        </div>
+
+        <!-- Page 12 -->
+        <div class="page">
+            <div class="page-number">12</div>
+            <div class="page-content">
+                <div class="dialogue">"Yes," said the hammer. "You are what keeps it all from falling apart. Without you, none of this holds."</div>
+            </div>
+        </div>
+
+        <!-- Page 13 -->
+        <div class="page">
+            <div class="page-number">13</div>
+            <div class="page-content">
+                The hand lifted the finished piece: a small, bright birdhouse.
+                <br><br>
+                From a distance, it looked simple. But the nail knew what it took to hold it all together.
+                <br><br>
+                A bird landed inside and chirped. 🐦
+            </div>
+        </div>
+
+        <!-- Page 14 -->
+        <div class="page">
+            <div class="page-number">14</div>
+            <div class="page-content">
+                The nail smiled quietly from within the wood.
+                <br><br>
+                He no longer feared the strikes.
+                <br><br>
+                He understood them.
+            </div>
+        </div>
+
+        <!-- Page 15 - Reflection -->
+        <div class="page reflection-page">
+            <div class="page-number">15</div>
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2em;">Reflection</h2>
+            <div class="page-content">
+                Most people stay on the surface.
+                <br><br>
+                They avoid discomfort. They fear going deep. They chase safety, pleasure, popularity. But in doing so, they miss their purpose.
+                <br><br>
+                They live loud but empty lives. Busy but disconnected. Seen, but not grounded.
+            </div>
+        </div>
+
+        <!-- Page 16 -->
+        <div class="page reflection-page">
+            <div class="page-number">16</div>
+            <div class="page-content">
+                But those who are willing to endure a few well-placed strikes — those who choose depth over noise — are the ones who hold things together.
+                <br><br>
+                Your pressure might not be punishment. It might be precision.
+                <br><br>
+                <strong>You're not being buried. You're being planted.</strong>
+            </div>
+        </div>
+
+        <!-- Page 17 - Interactive Questions -->
+        <div class="page reflection-page">
+            <div class="page-number">17</div>
+            <div class="questions">
+                <h3>Interactive Reflection</h3>
+                <p style="text-align: center; margin-bottom: 30px; opacity: 0.9;">Click each question to explore deeper and journal your thoughts</p>
+                
+                <div class="interactive-prompt" onclick="togglePrompt(this)">
+                    <div class="prompt-header">
+                        <span>🔨 What is your hammer?</span>
+                        <span class="expand-icon">⌄</span>
+                    </div>
+                    <div class="prompt-content">
+                        <p>Think about the challenges, pressures, or difficulties in your life right now. These might be:</p>
+                        <ul style="margin: 15px 0; padding-left: 20px;">
+                            <li>A demanding job or difficult boss</li>
+                            <li>Financial pressure or uncertainty</li>
+                            <li>Relationship conflicts or family dynamics</li>
+                            <li>Health challenges or limitations</li>
+                            <li>Personal failures or setbacks</li>
+                            <li>Criticism from others</li>
+                        </ul>
+                        <p><strong>Your "hammer" isn't your enemy — it might be the tool shaping you into who you're meant to become.</strong></p>
+                        <textarea class="journal-area" placeholder="Write about your current 'hammer' — what pressure or challenge is striking you repeatedly right now?"></textarea>
+                    </div>
+                </div>
+
+                <div class="interactive-prompt" onclick="togglePrompt(this)">
+                    <div class="prompt-header">
+                        <span>💪 What pressure is shaping you?</span>
+                        <span class="expand-icon">⌄</span>
+                    </div>
+                    <div class="prompt-content">
+                        <p>Consider how this pressure is actually changing you:</p>
+                        <ul style="margin: 15px 0; padding-left: 20px;">
+                            <li>What new strengths are you developing?</li>
+                            <li>What skills are you being forced to learn?</li>
+                            <li>How is your character being refined?</li>
+                            <li>What assumptions are being challenged?</li>
+                            <li>What's being stripped away that wasn't serving you?</li>
+                        </ul>
+                        <p><strong>Like the nail being driven deeper, you might be gaining strength and stability you never knew you needed.</strong></p>
+                        <textarea class="journal-area" placeholder="Describe how the pressure in your life is actually shaping you into something stronger or more purposeful..."></textarea>
+                    </div>
+                </div>
+
+                <div class="interactive-prompt" onclick="togglePrompt(this)">
+                    <div class="prompt-header">
+                        <span>💡 What truth is trying to drive you deeper?</span>
+                        <span class="expand-icon">⌄</span>
+                    </div>
+                    <div class="prompt-content">
+                        <p>Sometimes our struggles are trying to teach us something important:</p>
+                        <ul style="margin: 15px 0; padding-left: 20px;">
+                            <li>That surface-level success isn't fulfilling</li>
+                            <li>That we're capable of more than we thought</li>
+                            <li>That our real purpose involves serving others</li>
+                            <li>That authenticity matters more than popularity</li>
+                            <li>That depth creates more value than breadth</li>
+                            <li>That we're meant to be foundational, not decorative</li>
+                        </ul>
+                        <p><strong>What if you're not being buried, but planted? What might grow from this season of pressure?</strong></p>
+                        <textarea class="journal-area" placeholder="What deeper truth or purpose might this difficult season be preparing you for?"></textarea>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                    <p><strong>Remember: Your life might be the foundation someone else is depending on.</strong></p>
+                    <p style="margin-top: 15px; opacity: 0.9;">The nail couldn't see the birdhouse being built, but it was essential to its completion.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discussion Guide -->
+        <div class="page discussion-guide">
+            <h2 style="text-align: center; margin-bottom: 30px; font-size: 2em;">Discussion Guide</h2>
+            <p style="text-align: center; margin-bottom: 40px; font-size: 1.1em; opacity: 0.9;">
+                Use this guide for personal reflection, small groups, team development, or classroom discussions
+            </p>
+
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="showTab('personal')">Personal</button>
+                <button class="tab-btn" onclick="showTab('small-group')">Small Group</button>
+                <button class="tab-btn" onclick="showTab('workplace')">Workplace</button>
+                <button class="tab-btn" onclick="showTab('classroom')">Classroom</button>
+            </div>
+
+            <!-- Personal Reflection Tab -->
+            <div id="personal" class="tab-content active">
+                <div class="discussion-section">
+                    <h3>Personal Reflection Journey</h3>
+                    <div class="facilitator-note">
+                        <strong>💡 Facilitator Note:</strong> These questions are designed for deep personal introspection. Take your time with each one.
+                    </div>
+
+                    <div class="discussion-question">
+                        <strong>Opening Reflection:</strong> When have you felt most "useful" or purposeful in your life? What were the circumstances?
+                    </div>
+
+                    <div class="discussion-question">
+                        <strong>Identifying Your Hammer:</strong> What recurring challenges or pressures do you face? Instead of seeing them as obstacles, how might they be shaping tools?
+                    </div>
+
+                    <div class="discussion-question">
+                        <strong>Going Deeper:</strong> The nail feared "sinking" but was actually being positioned for purpose. What current situation feels like failure but might be preparation?
+                    </div>
+
+                    <div class="activity-box">
+                        <strong>📝 Journaling Exercise:</strong> Write a letter from your "future self" (5 years from now) explaining how today's struggles were necessary for tomorrow's strength.
+                    </div>
+
+                    <div class="discussion-question">
+                        <strong>Finding Your Foundation:</strong> Where in your life are you called to be "foundational" rather than visible? How can you embrace supporting roles?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Small Group Tab -->
+            <div id="small-group" class="tab-content">
+                <div class="discussion-section">
+                    <h3>Small Group Discussion (4-8 people)</h3>
+                    <div class="facilitator-note">
+                        <strong>💡 Facilitator Note:</strong> Allow 60-90 minutes. Create a safe space for vulnerability. Have tissues available.
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Opening (10 minutes)</div>
+                        <p>Have each person share: "Describe a time when something painful turned out to be beneficial later."</p>
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Story Discussion (25 minutes)</div>
+                        <div class="discussion-question">
+                            <strong>Q1:</strong> What part of the nail's journey resonated most with you? Why?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Q2:</strong> The hammer says "Sometimes pain is part of purpose." Do you agree? What are the dangers of this mindset?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Q3:</strong> How do we distinguish between purposeful pressure and destructive abuse?
+                        </div>
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Personal Sharing (30 minutes)</div>
+                        <div class="discussion-question">
+                            <strong>Round 1:</strong> Share about a current "hammer" in your life (if comfortable)
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Round 2:</strong> Where do you need to go "deeper" instead of staying on the surface?
+                        </div>
+                        <div class="facilitator-note">
+                            <strong>Ground Rules:</strong> No fixing or advice-giving. Listen to understand, not to respond.
+                        </div>
+                    </div>
+
+                    <div class="activity-box">
+                        <strong>🤝 Partner Exercise:</strong> Pair up and help each other identify one way their current struggles might be preparing them for future purpose.
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Closing (15 minutes)</div>
+                        <p>End with each person sharing one word that describes how they want to approach challenges differently.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workplace Tab -->
+            <div id="workplace" class="tab-content">
+                <div class="discussion-section">
+                    <h3>Workplace & Team Development</h3>
+                    <div class="facilitator-note">
+                        <strong>💡 Facilitator Note:</strong> Adapt language for your company culture. Focus on professional growth and team dynamics.
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Team Meeting Discussion (45 minutes)</div>
+                        <div class="discussion-question">
+                            <strong>Opening Question:</strong> "Think of a challenging project that ultimately made you stronger. What was it?"
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Team Dynamics:</strong> How can we reframe obstacles as "hammers" that strengthen our team rather than problems that weaken us?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Foundation Roles:</strong> The nail became invisible but essential. How do we value and recognize "foundational" team members who aren't in the spotlight?
+                        </div>
+                    </div>
+
+                    <div class="activity-box">
+                        <strong>🏗️ Team Exercise:</strong> "Building the Birdhouse" - Map out a recent successful project and identify who played "nail" roles (foundational but less visible) vs. "hammer" roles (applying pressure/direction).
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Leadership Development</div>
+                        <div class="discussion-question">
+                            <strong>For Managers:</strong> How do we apply "constructive pressure" to help team members grow without being destructive?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>For Individual Contributors:</strong> When facing workplace pressure, how do we distinguish between growth opportunities and toxic situations?
+                        </div>
+                    </div>
+
+                    <div class="facilitator-note">
+                        <strong>⚠️ Important:</strong> This parable should never be used to justify workplace abuse, unreasonable demands, or toxic leadership. The "hammer" represents constructive challenge, not destructive pressure.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classroom Tab -->
+            <div id="classroom" class="tab-content">
+                <div class="discussion-section">
+                    <h3>Educational Settings</h3>
+                    <div class="facilitator-note">
+                        <strong>💡 Facilitator Note:</strong> Adaptable for high school through adult education. Emphasize growth mindset and resilience.
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Literature Analysis Approach</div>
+                        <div class="discussion-question">
+                            <strong>Symbolism:</strong> What do the hammer, nail, and birdhouse represent? How do these symbols create meaning?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Theme:</strong> Identify the central theme. How does the author develop this theme through the story structure?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Character Development:</strong> How does the nail's perspective change throughout the story? What causes this transformation?
+                        </div>
+                    </div>
+
+                    <div class="activity-box">
+                        <strong>📚 Creative Writing Exercise:</strong> Write a similar parable using different objects (e.g., a seed and soil, a diamond and pressure, a musician and practice). What life lesson would you teach?
+                    </div>
+
+                    <div class="discussion-format">
+                        <div class="format-title">Life Skills & Character Development</div>
+                        <div class="discussion-question">
+                            <strong>Growth Mindset:</strong> How does this story illustrate the difference between fixed and growth mindset?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Resilience:</strong> What can we learn about handling difficulties and setbacks?
+                        </div>
+                        <div class="discussion-question">
+                            <strong>Purpose:</strong> How do we find meaning in challenging times?
+                        </div>
+                    </div>
+
+                    <div class="activity-box">
+                        <strong>🎭 Drama Exercise:</strong> Act out the story with students playing the nail, hammer, and narrator. How does embodying these characters change your understanding?
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 18 - Contact -->
+        <div class="page contact-page">
+            <div class="page-number">18</div>
+            <div class="hammer-nail-icon">🏗️</div>
+            <div class="page-content">
+                <h2>Build Something Meaningful</h2>
+                <br>
+                <p>To create branded storytelling books, apps, or websites like this one — for your team, your mission, or your movement — contact:</p>
+                <br>
+                <p><strong>info@victoryhourmedia.com</strong></p>
+                <p><strong>www.victoryhourmedia.com</strong></p>
+                <br>
+                <p><em>Let's build something meaningful together.</em></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="scrollToTop()">📖 Start</button>
+        <button class="nav-btn" onclick="scrollToReflection()">💭 Reflect</button>
+        <button class="nav-btn" onclick="scrollToDiscussion()">👥 Discuss</button>
+        <button class="nav-btn" onclick="scrollToEnd()">🏁 End</button>
+    </div>
+
+    <script>
+        // Ensure DOM is loaded before running scripts
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Update progress bar based on scroll
+            function updateProgressBar() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const docHeight = Math.max(
+                    document.body.scrollHeight,
+                    document.body.offsetHeight,
+                    document.documentElement.clientHeight,
+                    document.documentElement.scrollHeight,
+                    document.documentElement.offsetHeight
+                ) - window.innerHeight;
+                
+                const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+                const progressBar = document.getElementById('progressBar');
+                if (progressBar) {
+                    progressBar.style.width = Math.min(scrollPercent, 100) + '%';
+                }
+            }
+
+            window.addEventListener('scroll', updateProgressBar);
+            window.addEventListener('resize', updateProgressBar);
+            
+            // Initial call
+            updateProgressBar();
+
+            // Save journal entries
+            const journalAreas = document.querySelectorAll('.journal-area');
+            journalAreas.forEach(function(textarea, index) {
+                // Try to load saved content (safely handle localStorage)
+                try {
+                    const savedContent = localStorage.getItem('journal_' + index);
+                    if (savedContent) {
+                        textarea.value = savedContent;
+                    }
+                } catch (e) {
+                    // localStorage might not be available
+                    console.log('LocalStorage not available');
+                }
+                
+                // Save content on change
+                textarea.addEventListener('input', function() {
+                    try {
+                        localStorage.setItem('journal_' + index, textarea.value);
+                    } catch (e) {
+                        // localStorage might not be available
+                        console.log('Could not save to localStorage');
+                    }
+                });
+            });
+
+        });
+
+        // Navigation functions
+        function scrollToTop() {
+            window.scrollTo({ 
+                top: 0, 
+                behavior: window.requestAnimationFrame ? 'smooth' : 'auto'
+            });
+        }
+
+        function scrollToReflection() {
+            const reflectionPage = document.querySelector('.reflection-page');
+            if (reflectionPage) {
+                reflectionPage.scrollIntoView({ 
+                    behavior: window.requestAnimationFrame ? 'smooth' : 'auto'
+                });
+            }
+        }
+
+        function scrollToDiscussion() {
+            const discussionPage = document.querySelector('.discussion-guide');
+            if (discussionPage) {
+                discussionPage.scrollIntoView({ 
+                    behavior: window.requestAnimationFrame ? 'smooth' : 'auto'
+                });
+            }
+        }
+
+        function scrollToEnd() {
+            window.scrollTo({ 
+                top: document.body.scrollHeight, 
+                behavior: window.requestAnimationFrame ? 'smooth' : 'auto'
+            });
+        }
+
+        // Interactive prompt expansion
+        function togglePrompt(element) {
+            if (element && element.classList) {
+                element.classList.toggle('expanded');
+            }
+        }
+
+        // Tab navigation for discussion guide
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            // Show selected tab content
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Add active class to clicked button (find by checking textContent)
+            for (let i = 0; i < tabButtons.length; i++) {
+                const buttonText = tabButtons[i].textContent || tabButtons[i].innerText;
+                if ((tabName === 'personal' && buttonText === 'Personal') ||
+                    (tabName === 'small-group' && buttonText === 'Small Group') ||
+                    (tabName === 'workplace' && buttonText === 'Workplace') ||
+                    (tabName === 'classroom' && buttonText === 'Classroom')) {
+                    tabButtons[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
